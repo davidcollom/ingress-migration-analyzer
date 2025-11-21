@@ -18,33 +18,39 @@ kind delete cluster --name ingress-analyzer-test
 ## Test Environment
 
 ### Cluster Configuration
+
 - **Kubernetes**: v1.31.0 (via kind)
 - **ingress-nginx**: Latest from official deployment
 - **Namespaces**: `default`, `production`, `staging`
 - **Port Mappings**: 8080 → 80, 8443 → 443
 
 ### Sample Applications
+
 Four simple nginx-based web applications:
+
 - **echo-app** (default): Basic hello world
 - **api-app** (production): API service
-- **admin-app** (production): Admin dashboard  
+- **admin-app** (production): Admin dashboard
 - **legacy-app** (staging): Legacy application
 
 ### Sample Ingresses
+
 Demonstrates all risk levels and migration scenarios:
 
 #### ✅ AUTO-MIGRATABLE (1 ingress)
+
 - **simple-echo**: Basic rewrites and SSL redirects
   - `nginx.ingress.kubernetes.io/rewrite-target`
   - `nginx.ingress.kubernetes.io/ssl-redirect`
   - `nginx.ingress.kubernetes.io/force-ssl-redirect`
 
 #### ⚠️ MANUAL REVIEW (3 ingresses)
+
 - **api-with-auth**: Authentication and timeouts
   - `nginx.ingress.kubernetes.io/auth-url`
   - `nginx.ingress.kubernetes.io/proxy-body-size`
   - `nginx.ingress.kubernetes.io/proxy-read-timeout`
-  
+
 - **complex-routing**: Mixed annotations
   - `nginx.ingress.kubernetes.io/use-regex`
   - `nginx.ingress.kubernetes.io/rate-limit-rps`
@@ -55,18 +61,21 @@ Demonstrates all risk levels and migration scenarios:
   - Triggers deprecation warnings
 
 #### ❌ HIGH RISK (optional)
+
 - **high-risk-admin**: Server snippets (may be blocked by security policies)
   - `nginx.ingress.kubernetes.io/server-snippet`
   - `nginx.ingress.kubernetes.io/configuration-snippet`
 
 #### Ignored Resources
+
 - **other-ingress-controller**: Non-nginx ingress for comparison
 
 ## Expected Analysis Results
 
 When you run the analyzer, you should see:
+
 - **5 total** Ingress resources discovered
-- **4 ingress-nginx** resources identified  
+- **4 ingress-nginx** resources identified
 - **1 AUTO-MIGRATABLE** (25%)
 - **3 MANUAL REVIEW** (75%)
 - **0 HIGH RISK** (0% - snippets blocked by default)
@@ -87,6 +96,7 @@ curl -k -H 'Host: api.example.com' https://localhost:8443/api
 ## Generated Reports
 
 The analyzer generates comprehensive markdown reports with:
+
 - Executive summary with percentages
 - Namespace-level breakdown
 - Detailed per-resource analysis

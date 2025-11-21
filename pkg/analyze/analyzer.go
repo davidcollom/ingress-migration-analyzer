@@ -16,8 +16,8 @@ type Analyzer struct {
 }
 
 // NewAnalyzer creates a new analyzer instance
-func NewAnalyzer(client *discovery.Client, namespace string) *Analyzer {
-	scanner := discovery.NewScanner(client, namespace)
+func NewAnalyzer(client *discovery.Client, namespace, ingressClassName, controllerNamespace string) *Analyzer {
+	scanner := discovery.NewScanner(client, namespace, ingressClassName, controllerNamespace)
 	return &Analyzer{
 		scanner: scanner,
 	}
@@ -60,13 +60,13 @@ func (a *Analyzer) AnalyzeCluster(ctx context.Context) (*models.ClusterAnalysis,
 func (a *Analyzer) analyzeIngress(resource models.IngressResource) models.IngressAnalysis {
 	// Match annotations against rules
 	matchedRules := rules.MatchAnnotations(resource.Annotations)
-	
+
 	// Determine overall risk level
 	riskLevel := rules.GetHighestRiskLevel(matchedRules)
-	
+
 	// Find unknown nginx annotations
 	unknownAnnotations := rules.GetUnknownNginxAnnotations(resource.Annotations)
-	
+
 	// Generate warnings
 	warnings := a.generateWarnings(resource, matchedRules)
 
@@ -146,13 +146,13 @@ func (a *Analyzer) generateSummary(analyses []models.IngressAnalysis) models.Ana
 func (a *Analyzer) printAnalysisSummary(summary models.AnalysisSummary) {
 	fmt.Println("\n📈 Analysis Summary:")
 	fmt.Printf("   Total Resources: %d\n", summary.TotalIngresses)
-	fmt.Printf("   ✅ AUTO-MIGRATABLE: %d (%.0f%%)\n", 
-		summary.AutoCount, 
+	fmt.Printf("   ✅ AUTO-MIGRATABLE: %d (%.0f%%)\n",
+		summary.AutoCount,
 		float64(summary.AutoCount)/float64(summary.TotalIngresses)*100)
-	fmt.Printf("   ⚠️  MANUAL REVIEW: %d (%.0f%%)\n", 
+	fmt.Printf("   ⚠️  MANUAL REVIEW: %d (%.0f%%)\n",
 		summary.ManualCount,
 		float64(summary.ManualCount)/float64(summary.TotalIngresses)*100)
-	fmt.Printf("   ❌ HIGH RISK: %d (%.0f%%)\n", 
+	fmt.Printf("   ❌ HIGH RISK: %d (%.0f%%)\n",
 		summary.HighRiskCount,
 		float64(summary.HighRiskCount)/float64(summary.TotalIngresses)*100)
 

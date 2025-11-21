@@ -30,17 +30,31 @@ spec:
         app: echo-app
     spec:
       containers:
-      - name: echo
-        image: nginx:1.21-alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: echo
+          image: nginx:1.21-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
-      - name: html
-        configMap:
-          name: echo-html
+        - name: html
+          configMap:
+            name: echo-html
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
 
 ---
 apiVersion: v1
@@ -52,8 +66,8 @@ spec:
   selector:
     app: echo-app
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
   type: ClusterIP
 
 ---
@@ -85,17 +99,27 @@ spec:
         app: api-app
     spec:
       containers:
-      - name: api
-        image: nginx:1.21-alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: api
+          image: nginx:1.21-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
-      - name: html
-        configMap:
-          name: api-html
+        - name: html
+          configMap:
+            name: api-html
 
 ---
 apiVersion: v1
@@ -107,8 +131,8 @@ spec:
   selector:
     app: api-app
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
   type: ClusterIP
 
 ---
@@ -140,17 +164,27 @@ spec:
         app: admin-app
     spec:
       containers:
-      - name: admin
-        image: nginx:1.21-alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: admin
+          image: nginx:1.21-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
-      - name: html
-        configMap:
-          name: admin-html
+        - name: html
+          configMap:
+            name: admin-html
 
 ---
 apiVersion: v1
@@ -162,8 +196,8 @@ spec:
   selector:
     app: admin-app
   ports:
-  - port: 8080
-    targetPort: 80
+    - port: 8080
+      targetPort: 80
   type: ClusterIP
 
 ---
@@ -195,17 +229,26 @@ spec:
         app: legacy-app
     spec:
       containers:
-      - name: legacy
-        image: nginx:1.21-alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: legacy
+          image: nginx:1.21-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
-      - name: html
-        configMap:
-          name: legacy-html
+        - name: html
+          configMap:
+            name: legacy-html
 
 ---
 apiVersion: v1
@@ -217,6 +260,6 @@ spec:
   selector:
     app: legacy-app
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
   type: ClusterIP

@@ -39,6 +39,42 @@ func GetAnnotationRules() []models.AnnotationRule {
 			SourceURL: "https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/",
 		},
 		{
+			Name:        "Permanent Redirect",
+			Pattern:     "nginx.ingress.kubernetes.io/permanent-redirect",
+			RiskLevel:   models.RiskAuto,
+			Description: "Allows to return a permanent redirect (Return Code 301) instead of sending data to the upstream.",
+			MigrationNote: "Gateway API HTTPRoute supports Permanent redirects via RequestRedirect filters. " +
+				"Standard feature across Gateway implementations.",
+			SourceURL: "https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/",
+		},
+		{
+			Name:        "Permanent Redirect Code",
+			Pattern:     "nginx.ingress.kubernetes.io/permanent-redirect-code",
+			RiskLevel:   models.RiskAuto,
+			Description: "Override the HTTP status code used for permanent redirects.",
+			MigrationNote: "Gateway API HTTPRoute supports HTTPS redirects via RequestRedirect filters. " +
+				"Standard feature across Gateway implementations.",
+			SourceURL: "https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/",
+		},
+		{
+			Name:        "Temporal Redirect",
+			Pattern:     "nginx.ingress.kubernetes.io/temporal-redirect",
+			RiskLevel:   models.RiskAuto,
+			Description: "Allows to return a temporal redirect (defaults to: 302) instead of sending data to the upstream.",
+			MigrationNote: "Gateway API HTTPRoute supports Permanent redirects via RequestRedirect filters. " +
+				"Standard feature across Gateway implementations.",
+			SourceURL: "https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/",
+		},
+		{
+			Name:        "Temporal Redirect",
+			Pattern:     "nginx.ingress.kubernetes.io/temporal-redirect-code",
+			RiskLevel:   models.RiskAuto,
+			Description: "Override the HTTP status code used for permanent redirects.",
+			MigrationNote: "Gateway API HTTPRoute supports HTTPS redirects via RequestRedirect filters. " +
+				"Standard feature across Gateway implementations.",
+			SourceURL: "https://gateway-api.sigs.k8s.io/guides/http-redirect-rewrite/",
+		},
+		{
 			Name:        "Backend Protocol",
 			Pattern:     "nginx.ingress.kubernetes.io/backend-protocol",
 			RiskLevel:   models.RiskManual,

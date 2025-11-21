@@ -27,16 +27,29 @@ type IngressResource struct {
 
 // ScanResult represents the results of cluster scanning
 type ScanResult struct {
-	ClusterVersion string            `json:"clusterVersion"`
-	TotalIngresses int               `json:"totalIngresses"`
-	NginxIngresses []IngressResource `json:"nginxIngresses"`
-	ScanTime       time.Time         `json:"scanTime"`
+	ClusterVersion string `json:"clusterVersion"` // Kubernetes cluster version
+	ContextName    string `json:"contextName"`    // Kubernetes context used
+
+	TotalIngresses int               `json:"totalIngresses"` // Total Ingress resources found
+	NginxIngresses []IngressResource `json:"nginxIngresses"` // Discovered nginx Ingresses
+	NginxConfig    map[string]string `json:"nginxConfig"`    // Global ConfigMap data
+	ScanTime       time.Time         `json:"scanTime"`       // Time of the scan
 }
 
 // AnnotationRule defines how to classify a specific annotation
 type AnnotationRule struct {
 	Name          string    `json:"name"`
 	Pattern       string    `json:"pattern"` // annotation key pattern
+	RiskLevel     RiskLevel `json:"riskLevel"`
+	Description   string    `json:"description"`
+	MigrationNote string    `json:"migrationNote"` // What to do about it
+	SourceURL     string    `json:"sourceUrl"`     // Documentation source
+}
+
+// ConfigMapRule defines how to classify a specific ConfigMap setting
+type ConfigMapRule struct {
+	Name          string    `json:"name"`
+	Key           string    `json:"key"` // ConfigMap key
 	RiskLevel     RiskLevel `json:"riskLevel"`
 	Description   string    `json:"description"`
 	MigrationNote string    `json:"migrationNote"` // What to do about it

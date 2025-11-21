@@ -8,7 +8,7 @@ import (
 
 func TestGetAnnotationRules(t *testing.T) {
 	rules := GetAnnotationRules()
-	
+
 	if len(rules) == 0 {
 		t.Fatal("Expected annotation rules, got none")
 	}
@@ -56,8 +56,8 @@ func TestMatchAnnotations(t *testing.T) {
 		{
 			name: "mixed risk annotations",
 			annotations: map[string]string{
-				"nginx.ingress.kubernetes.io/rewrite-target":    "/api/$1",
-				"nginx.ingress.kubernetes.io/server-snippet":   "custom config",
+				"nginx.ingress.kubernetes.io/rewrite-target":  "/api/$1",
+				"nginx.ingress.kubernetes.io/server-snippet":  "custom config",
 				"nginx.ingress.kubernetes.io/proxy-body-size": "50m",
 			},
 			wantCount: 3,
@@ -73,7 +73,7 @@ func TestMatchAnnotations(t *testing.T) {
 			wantRisk:  models.RiskHigh,
 		},
 		{
-			name:        "no nginx annotations",
+			name: "no nginx annotations",
 			annotations: map[string]string{
 				"kubernetes.io/ingress.class": "nginx",
 				"cert-manager.io/issuer":      "letsencrypt",
@@ -86,7 +86,7 @@ func TestMatchAnnotations(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			matches := MatchAnnotations(tt.annotations)
-			
+
 			if len(matches) != tt.wantCount {
 				t.Errorf("MatchAnnotations() returned %d matches, want %d", len(matches), tt.wantCount)
 			}
@@ -106,18 +106,18 @@ func TestGetUnknownNginxAnnotations(t *testing.T) {
 		// Known annotations
 		"nginx.ingress.kubernetes.io/rewrite-target": "/api/$1",
 		"nginx.ingress.kubernetes.io/ssl-redirect":   "true",
-		
+
 		// Unknown nginx annotations
 		"nginx.ingress.kubernetes.io/custom-unknown":  "value",
 		"nginx.ingress.kubernetes.io/another-unknown": "value",
-		
+
 		// Non-nginx annotations (should be ignored)
 		"kubernetes.io/ingress.class": "nginx",
 		"cert-manager.io/issuer":      "letsencrypt",
 	}
 
 	unknown := GetUnknownNginxAnnotations(annotations)
-	
+
 	expectedUnknown := []string{
 		"nginx.ingress.kubernetes.io/custom-unknown",
 		"nginx.ingress.kubernetes.io/another-unknown",

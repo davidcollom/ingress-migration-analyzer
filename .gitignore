@@ -32,4 +32,6 @@ reports/
 # Build artifacts
 bin/
 dist/
-analyzer
+./analyzer
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md

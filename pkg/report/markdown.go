@@ -12,8 +12,12 @@ import (
 	"ingress-migration-analyzer/pkg/analyze"
 )
 
+func init() {
+	reportFormats = append(reportFormats, "markdown")
+}
+
 // MarkdownGenerator generates markdown reports
-type MarkdownGenerator struct{
+type MarkdownGenerator struct {
 	ContextName string
 }
 
@@ -47,10 +51,10 @@ func (m *MarkdownGenerator) generateReportContent(analysis *models.ClusterAnalys
 
 	// Header
 	m.writeHeader(&content, analysis)
-	
+
 	// Executive Summary
 	m.writeExecutiveSummary(&content, analysis)
-	
+
 	// High-Risk Resources (if any)
 	if analysis.Summary.HighRiskCount > 0 {
 		m.writeHighRiskResources(&content, analysis)
@@ -85,19 +89,19 @@ func (m *MarkdownGenerator) writeHeader(content *strings.Builder, analysis *mode
 func (m *MarkdownGenerator) writeExecutiveSummary(content *strings.Builder, analysis *models.ClusterAnalysis) {
 	summary := analysis.Summary
 	total := summary.TotalIngresses
-	
+
 	content.WriteString("## Executive Summary\n\n")
-	
+
 	if total == 0 {
 		content.WriteString("🎉 **No ingress-nginx resources found!** Your cluster is already using other ingress solutions.\n\n")
 		return
 	}
 
-	content.WriteString(fmt.Sprintf("- ✅ **AUTO-MIGRATABLE**: %d (%.0f%%)\n", 
+	content.WriteString(fmt.Sprintf("- ✅ **AUTO-MIGRATABLE**: %d (%.0f%%)\n",
 		summary.AutoCount, float64(summary.AutoCount)/float64(total)*100))
-	content.WriteString(fmt.Sprintf("- ⚠️  **MANUAL REVIEW**: %d (%.0f%%)\n", 
+	content.WriteString(fmt.Sprintf("- ⚠️  **MANUAL REVIEW**: %d (%.0f%%)\n",
 		summary.ManualCount, float64(summary.ManualCount)/float64(total)*100))
-	content.WriteString(fmt.Sprintf("- ❌ **HIGH RISK**: %d (%.0f%%)\n", 
+	content.WriteString(fmt.Sprintf("- ❌ **HIGH RISK**: %d (%.0f%%)\n",
 		summary.HighRiskCount, float64(summary.HighRiskCount)/float64(total)*100))
 
 	content.WriteString("\n")
@@ -136,15 +140,15 @@ func (m *MarkdownGenerator) writeHighRiskResources(content *strings.Builder, ana
 
 	for _, ns := range namespaces {
 		content.WriteString(fmt.Sprintf("### Namespace: %s\n\n", ns))
-		
+
 		for _, a := range byNamespace[ns] {
 			highRiskRules := m.getHighRiskRules(a.MatchedRules)
 			ruleNames := make([]string, len(highRiskRules))
 			for i, rule := range highRiskRules {
 				ruleNames[i] = rule.Name
 			}
-			
-			content.WriteString(fmt.Sprintf("- **%s** - Uses: %s\n", 
+
+			content.WriteString(fmt.Sprintf("- **%s** - Uses: %s\n",
 				a.Resource.Name, strings.Join(ruleNames, ", ")))
 		}
 		content.WriteString("\n")
@@ -203,11 +207,11 @@ func (m *MarkdownGenerator) writeDetailedAnalysis(content *strings.Builder, anal
 func (m *MarkdownGenerator) writeResourceDetails(content *strings.Builder, analysis models.IngressAnalysis) {
 	resource := analysis.Resource
 	icon := analyze.GetRiskLevelIcon(analysis.RiskLevel)
-	
+
 	content.WriteString(fmt.Sprintf("### %s %s/%s\n\n", icon, resource.Namespace, resource.Name))
 	content.WriteString(fmt.Sprintf("- **Risk Level**: %s\n", analysis.RiskLevel))
 	content.WriteString(fmt.Sprintf("- **Ingress Class**: %s\n", resource.ClassName))
-	
+
 	if len(resource.Hosts) > 0 {
 		content.WriteString(fmt.Sprintf("- **Hosts**: %s\n", strings.Join(resource.Hosts, ", ")))
 	}
@@ -215,7 +219,7 @@ func (m *MarkdownGenerator) writeResourceDetails(content *strings.Builder, analy
 	// Annotations analysis
 	if len(analysis.MatchedRules) > 0 {
 		content.WriteString("- **Annotations**:\n")
-		
+
 		// Group by risk level for better presentation
 		autoRules := m.getRulesByRisk(analysis.MatchedRules, models.RiskAuto)
 		manualRules := m.getRulesByRisk(analysis.MatchedRules, models.RiskManual)
@@ -223,27 +227,27 @@ func (m *MarkdownGenerator) writeResourceDetails(content *strings.Builder, analy
 
 		for _, rule := range autoRules {
 			annotationValue := resource.Annotations[rule.Pattern]
-			content.WriteString(fmt.Sprintf("  - ✅ %s: `%s` → %s", 
+			content.WriteString(fmt.Sprintf("  - ✅ %s: `%s` → %s",
 				rule.Name, annotationValue, rule.MigrationNote))
 			if rule.SourceURL != "" {
 				content.WriteString(fmt.Sprintf(" ([docs](%s))", rule.SourceURL))
 			}
 			content.WriteString("\n")
 		}
-		
+
 		for _, rule := range manualRules {
 			annotationValue := resource.Annotations[rule.Pattern]
-			content.WriteString(fmt.Sprintf("  - ⚠️  %s: `%s` → %s", 
+			content.WriteString(fmt.Sprintf("  - ⚠️  %s: `%s` → %s",
 				rule.Name, annotationValue, rule.MigrationNote))
 			if rule.SourceURL != "" {
 				content.WriteString(fmt.Sprintf(" ([docs](%s))", rule.SourceURL))
 			}
 			content.WriteString("\n")
 		}
-		
+
 		for _, rule := range highRiskRules {
 			annotationValue := resource.Annotations[rule.Pattern]
-			content.WriteString(fmt.Sprintf("  - ❌ %s: `%s` → %s", 
+			content.WriteString(fmt.Sprintf("  - ❌ %s: `%s` → %s",
 				rule.Name, annotationValue, rule.MigrationNote))
 			if rule.SourceURL != "" {
 				content.WriteString(fmt.Sprintf(" ([docs](%s))", rule.SourceURL))
@@ -291,7 +295,7 @@ func (m *MarkdownGenerator) writeMigrationRecommendations(content *strings.Build
 	}
 
 	content.WriteString("### General Guidance\n\n")
-	
+
 	if analysis.Summary.AutoCount > 0 {
 		content.WriteString(fmt.Sprintf("1. **Start with AUTO-MIGRATABLE resources** (%d resources)\n", analysis.Summary.AutoCount))
 		content.WriteString("   - These have direct Gateway API equivalents\n")

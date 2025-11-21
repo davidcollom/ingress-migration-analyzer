@@ -10,6 +10,10 @@ import (
 	"ingress-migration-analyzer/internal/models"
 )
 
+func init() {
+	reportFormats = append(reportFormats, "json")
+}
+
 // JSONGenerator generates JSON reports
 type JSONGenerator struct{}
 

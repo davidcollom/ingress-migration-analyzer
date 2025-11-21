@@ -10,15 +10,15 @@ import (
 
 // AnnotationUsage tracks how an annotation is used across the cluster
 type AnnotationUsage struct {
-	Key           string            `json:"key"`
-	UniqueValues  []string          `json:"uniqueValues"`
-	UsageCount    int               `json:"usageCount"`
-	Namespaces    []string          `json:"namespaces"`
-	ValueExamples map[string]int    `json:"valueExamples"` // value -> count
-	Risk          models.RiskLevel  `json:"risk"`
-	Description   string            `json:"description"`
-	MigrationNote string            `json:"migrationNote"`
-	SourceURL     string            `json:"sourceUrl"`
+	Key           string           `json:"key"`
+	UniqueValues  []string         `json:"uniqueValues"`
+	UsageCount    int              `json:"usageCount"`
+	Namespaces    []string         `json:"namespaces"`
+	ValueExamples map[string]int   `json:"valueExamples"` // value -> count
+	Risk          models.RiskLevel `json:"risk"`
+	Description   string           `json:"description"`
+	MigrationNote string           `json:"migrationNote"`
+	SourceURL     string           `json:"sourceUrl"`
 }
 
 // AnnotationInventory provides comprehensive annotation analysis
@@ -26,16 +26,16 @@ type AnnotationInventory struct {
 	AllAnnotations     map[string]*AnnotationUsage `json:"allAnnotations"`
 	NginxAnnotations   map[string]*AnnotationUsage `json:"nginxAnnotations"`
 	UnknownAnnotations map[string]*AnnotationUsage `json:"unknownAnnotations"`
-	Summary           InventorySummary            `json:"summary"`
+	Summary            InventorySummary            `json:"summary"`
 }
 
 // InventorySummary provides high-level inventory statistics
 type InventorySummary struct {
-	TotalUniqueAnnotations    int `json:"totalUniqueAnnotations"`
-	NginxAnnotationsCount     int `json:"nginxAnnotationsCount"`
-	UnknownAnnotationsCount   int `json:"unknownAnnotationsCount"`
-	MostUsedAnnotation       string `json:"mostUsedAnnotation"`
-	MostComplexNamespace     string `json:"mostComplexNamespace"`
+	TotalUniqueAnnotations  int    `json:"totalUniqueAnnotations"`
+	NginxAnnotationsCount   int    `json:"nginxAnnotationsCount"`
+	UnknownAnnotationsCount int    `json:"unknownAnnotationsCount"`
+	MostUsedAnnotation      string `json:"mostUsedAnnotation"`
+	MostComplexNamespace    string `json:"mostComplexNamespace"`
 }
 
 // BuildAnnotationInventory creates comprehensive annotation usage analysis
@@ -64,7 +64,7 @@ func BuildAnnotationInventory(analyses []models.IngressAnalysis) *AnnotationInve
 			if strings.HasPrefix(key, "nginx.ingress.kubernetes.io/") {
 				nginxUsage := getOrCreateUsage(inventory.NginxAnnotations, key)
 				updateUsage(nginxUsage, value, analysis.Resource.Namespace)
-				
+
 				// Add risk and migration info
 				if rule := rules.GetRuleByPattern(key); rule != nil {
 					nginxUsage.Risk = rule.RiskLevel
@@ -167,7 +167,7 @@ func generateInventorySummary(inventory *AnnotationInventory) InventorySummary {
 // sorted by usage count within each risk level for prioritization.
 func (inv *AnnotationInventory) GetAnnotationsByRisk() map[models.RiskLevel][]*AnnotationUsage {
 	byRisk := make(map[models.RiskLevel][]*AnnotationUsage)
-	
+
 	for _, usage := range inv.NginxAnnotations {
 		byRisk[usage.Risk] = append(byRisk[usage.Risk], usage)
 	}
@@ -237,7 +237,7 @@ func isSystemAnnotation(key string) bool {
 
 	// Also filter out common system annotations
 	systemAnnotations := []string{
-		"kubernetes.io/ingress.class",  // This is actually important for migration but handled separately
+		"kubernetes.io/ingress.class", // This is actually important for migration but handled separately
 		"field.cattle.io/publicEndpoints",
 		"meta.helm.sh/release-name",
 		"meta.helm.sh/release-namespace",

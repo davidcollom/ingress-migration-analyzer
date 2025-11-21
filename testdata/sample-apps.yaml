@@ -51,10 +51,6 @@ spec:
         - name: html
           configMap:
             name: echo-html
-      livenessProbe:
-        httpGet:
-          path: /
-          port: 80
 
 ---
 apiVersion: v1

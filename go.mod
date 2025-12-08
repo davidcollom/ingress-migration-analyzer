@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/go-openapi/testify/v2 v2.0.2
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	k8s.io/api v0.34.2
 	k8s.io/apimachinery v0.34.2
 	k8s.io/client-go v0.34.2

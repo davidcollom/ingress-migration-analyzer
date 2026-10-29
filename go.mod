@@ -3,11 +3,11 @@ module ingress-migration-analyzer
 go 1.25.0
 
 require (
-	github.com/go-openapi/testify/v2 v2.0.2
-	github.com/spf13/cobra v1.10.1
-	k8s.io/api v0.34.2
-	k8s.io/apimachinery v0.34.2
-	k8s.io/client-go v0.34.2
+	github.com/go-openapi/testify/v2 v2.1.8
+	github.com/spf13/cobra v1.10.2
+	k8s.io/api v0.35.0
+	k8s.io/apimachinery v0.35.0
+	k8s.io/client-go v0.35.0
 )
 
 require (
@@ -29,7 +29,6 @@ require (
 	github.com/go-openapi/swag/stringutils v0.25.3 // indirect
 	github.com/go-openapi/swag/typeutils v0.25.3 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.3 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
